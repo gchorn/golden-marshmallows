@@ -110,7 +110,7 @@ class GoldenSchema(Schema):
                 any field named 'id'
         """
         if snake_to_camel and camel_to_snake:
-            raise Exception(
+            raise ValueError(
                 'Only one of snake_to_camel or camel_to_snake can be True')
 
         self.snake_to_camel = snake_to_camel
