@@ -14,6 +14,9 @@ class WizardCollege(Base):
                               cascade='all, delete, delete-orphan',
                               single_parent=True)
 
+    def __repr__(self):
+        return '<WizardCollege(name={self.name!r})>'.format(self=self)
+
 
 class Alchemist(Base):
     __tablename__ = 'alchemists'
@@ -33,6 +36,9 @@ class Formula(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     author_id = Column(Integer, ForeignKey('alchemists.id'))
+
+    def __repr__(self):
+        return '<Formula(title={self.title!r})>'.format(self=self)
 
 
 class CamelFormula(Base):
