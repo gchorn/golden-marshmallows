@@ -45,7 +45,7 @@ class CamelFormula(Base):
     __tablename__ = 'camel_formulae'
     id = Column(Integer, primary_key=True)
     title = Column(String)
-    extraAttribute = Column(String)
+    camelAttribute = Column(String)
 
 
 Base.metadata.create_all(engine)

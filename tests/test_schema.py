@@ -212,14 +212,64 @@ class TestGoldenSchema:
                           camel_to_snake=True)
 
         camel_formula = CamelFormula(
-            id=1, title='transmutation', extraAttribute='value')
+            id=1, title='transmutation', camelAttribute='value')
 
         serialized = gs.dump(camel_formula).data
 
         expected = {
-            'extra_attribute': 'value',
+            'camel_attribute': 'value',
             'id': 1,
             'title': 'transmutation'
+        }
+
+        assert serialized == expected
+
+    def test_snake_to_camel_manual_fields(self):
+
+        class GoldenSubclass(GoldenSchema):
+            manual_field = fields.Function(lambda obj: 'manual value')
+
+        gs = GoldenSubclass(
+            Alchemist,
+            nested_map=self.nested_map['alchemists']['nested_map'],
+            snake_to_camel=True)
+
+        serialized = gs.dump(self.alchemist).data
+
+        expected = {
+            'formulae': [
+                {
+                    'authorId': 1,
+                    'id': 1,
+                    'title': 'transmutation'
+                }
+            ],
+            'id': 1,
+            'name': 'Albertus Magnus',
+            'schoolId': 1,
+            'manualField': 'manual value'
+        }
+
+        assert serialized == expected
+
+    def test_camel_to_snake_manual_fields(self):
+
+        class GoldenSubclass(GoldenSchema):
+            manualField = fields.Function(lambda obj: 'manual value')
+
+        gs = GoldenSubclass(CamelFormula, nested_map=self.nested_map,
+                            camel_to_snake=True)
+
+        camel_formula = CamelFormula(
+            id=1, title='transmutation', camelAttribute='value')
+
+        serialized = gs.dump(camel_formula).data
+
+        expected = {
+            'camel_attribute': 'value',
+            'id': 1,
+            'title': 'transmutation',
+            'manual_field': 'manual value'
         }
 
         assert serialized == expected
