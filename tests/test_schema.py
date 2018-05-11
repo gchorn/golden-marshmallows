@@ -1,9 +1,59 @@
 import pytest
+from marshmallow import fields
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from .sqlalchemy_classes import (
     Alchemist, CamelFormula, engine, Formula, WizardCollege)
-from golden_marshmallows.schema import GoldenSchema
+from golden_marshmallows.schema import CaseChangingSchema, GoldenSchema
+
+
+class SnakeSchema(CaseChangingSchema):
+    attr_one = fields.String()
+    attr_two = fields.Integer()
+
+
+class CamelSchema(CaseChangingSchema):
+    attrOne = fields.String()
+    attrTwo = fields.Integer()
+
+
+class SnakeObj:
+    def __init__(self, attr_one, attr_two):
+        self.attr_one = attr_one
+        self.attr_two = attr_two
+
+
+class CamelObj:
+    def __init__(self, attr_one, attr_two):
+        self.attrOne = attr_one
+        self.attrTwo = attr_two
+
+
+class TestCaseChangingSchema:
+
+    def test_camel_casing(self):
+        tschema = SnakeSchema(snake_to_camel=True)
+        tobj = SnakeObj('field1', 2)
+
+        expected = {
+            'attrOne': 'field1',
+            'attrTwo': 2
+        }
+        result = tschema.dump(tobj).data
+
+        assert result == expected
+
+    def test_snake_casing(self):
+        tschema = CamelSchema(camel_to_snake=True)
+        tobj = CamelObj('field1', 2)
+
+        expected = {
+            'attr_one': 'field1',
+            'attr_two': 2
+        }
+        result = tschema.dump(tobj).data
+
+        assert result == expected
 
 
 class TestGoldenSchema:
