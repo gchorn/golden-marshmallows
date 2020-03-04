@@ -25,7 +25,7 @@ class Alchemist(Base):
     name = Column(String)
     school_id = Column(Integer, ForeignKey('wizard_college.id'))
     formulae = relationship('Formula')
-    
+
     def __repr__(self):
         return '<Alchemist(name={self.name!r})>'.format(self=self)
 
@@ -41,7 +41,7 @@ class Formula(Base):
 The `GoldenSchema` class allows quick and easy generation of `marshmallow` schemas that can be used for SQLAlchemy object serialization/deserialization. Simply pass the model class on initialization and you're ready to go:
 ```python
 import json
-from golden_marshmallow.schema import GoldenSchema
+from golden_marshmallows.schema import GoldenSchema
 from models import Alchemist, Formula, WizardCollege
 
 alchemist = Alchemist(name='Albertus Magnus', school_id=1)
@@ -53,7 +53,7 @@ schema = GoldenSchema(Alchemist)
 serialized = schema.dump(alchemist).data
 
 print(json.dump(serialized, indent=4))
-# {   
+# {
 #     "id": 1,
 #     "name": "Albertus Magnus",
 #     "school_id": 1
@@ -201,7 +201,7 @@ This feature also works for manually declared fields; that is, fields you yourse
 ```python
 class MySchema(GoldenSchema):
     manually_declared = fields.Function(lambda obj: 'my special value')
-    
+
 my_schema = MySchema(Formula, snake_to_camel=True)
 
 serialized = schema.dump(formula).data
@@ -221,12 +221,12 @@ from golden_marshmallows.schema import CaseChangingSchema
 class SnakeSchema(CaseChangingSchema):
     attr_one = fields.String()
     attr_two = fields.Integer()
-    
+
 class SnakeObj:
     def __init__(self, attr_one, attr_two):
         self.attr_one = attr_one
         self.attr_two = attr_two
-        
+
 schema = SnakeSchema(snake_to_camel=True)
 obj = SnakeObj('field1', 2)
 
