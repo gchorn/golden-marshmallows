@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='golden_marshmallows',
-    version='0.2.0',
+    version='0.2.1',
     author='Guillaume Chorn',
     author_email='guillaume.chorn@gmail.com',
     packages=['golden_marshmallows'],
