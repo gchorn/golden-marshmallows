@@ -12,10 +12,10 @@ setup(
     author_email='guillaume.chorn@gmail.com',
     packages=['golden_marshmallows'],
     url='https://github.com/gchorn/golden-marshmallows',
-    download_url='https://github.com/gchorn/golden-marshmallows/archive/v0.2.0.tar.gz',
+    download_url='https://github.com/gchorn/golden-marshmallows/archive/v0.2.1.tar.gz',
     description='Marshmallow Schema subclass that auto-defines fields based on'
                 ' SQLAlchemy classes',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=['marshmallow>=2.9.0', 'SQLAlchemy>=0.9.8']
+    install_requires=['marshmallow<3', 'SQLAlchemy']
 )
