@@ -47,6 +47,7 @@ class EnumField(fields.Method):
         """
         # By now attributes have been case-converted; this must be
         # reversed to access the original object attribute by name
+        attribute = attr
         if self.snake_to_camel:
             attribute = snakecase(attr)
         if self.camel_to_snake:
