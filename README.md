@@ -135,6 +135,49 @@ print(json.dump(serialized, indent=4))
 #     ]
 # }
 ```
+You may need more control over the `GoldenSchema` instances that are nested into your top-level schema in the `nested_map` parameter. If that's the case, you can simply create a nested `GoldenSchema` instance and pass it in directly like so:
+```python
+from marshmallow.fields import List, String
+
+
+FormulaSchema = GoldenSchema(Formula)
+
+
+class FormulaSchemaWithIngredients(FormulaSchema):
+    ingredients = List(String())
+
+
+nested_map = {
+    'formulae': {
+        'class': FormulaSchemaWithIngredients,
+        'many': True
+    }
+}
+
+alchemist = session.query(Alchemist).first()
+formula = alchemist.formulae[0]
+formula.ingredients = ['lead', 'magic']
+
+schema = GoldenSchema(Alchemist, nested_map=nested_map)
+
+serialized = schema.dump(alchemist).data
+
+print(json.dump(serialized, indent=4))
+# {
+#     "id": 1,
+#     "name": "Albertus Magnus",
+#     "school_id": 1,
+#     "formulae" : [
+#         {
+#             "title": "transmutation",
+#             "ingredients": [
+#                 "lead",
+#                 "magic"
+#             ]
+#         }
+#     ]
+# }
+```
 ## Deserialization
 Of course, you can deserialize data into SQLAlchemy objects just as easily:
 ```python
