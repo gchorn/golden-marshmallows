@@ -113,6 +113,71 @@ class TestGoldenSchema:
 
         assert serialized == expected
 
+    def test_serialization_nest_golden_schema(self):
+        golden_formula = GoldenSchema(Formula)
+        self.nested_map['alchemists']['nested_map']['formulae']['class'] = \
+            golden_formula
+
+        gs = GoldenSchema(WizardCollege, nested_map=self.nested_map)
+
+        serialized = gs.dump(self.school).data
+
+        expected = {
+            "id": 1,
+            "name": "Bogwarts",
+            "alchemists": [
+                {
+                    "formulae": [
+                        {
+                            "title": "transmutation",
+                            "author_id": 1,
+                            "id": 1
+                        }
+                    ],
+                    "school_id": 1,
+                    "id": 1,
+                    "name": "Albertus Magnus"
+                }
+            ]
+        }
+
+        assert serialized == expected
+
+    def test_serialization_nest_golden_schema_with_extra_field(self):
+        class GoldenFormulaWithIngredients(GoldenSchema):
+            ingredients = fields.List(fields.String())
+
+        self.nested_map['alchemists']['nested_map']['formulae']['class'] = \
+            GoldenFormulaWithIngredients(Formula)
+
+        gs = GoldenSchema(WizardCollege, nested_map=self.nested_map)
+
+        self.school.alchemists[0].formulae[0].ingredients = ['magic', 'lead']
+
+        serialized = gs.dump(self.school).data
+
+        expected = {
+            "id": 1,
+            "name": "Bogwarts",
+            "alchemists": [
+                {
+                    "formulae": [
+                        {
+                            "title": "transmutation",
+                            "author_id": 1,
+                            "id": 1,
+                            "ingredients": ['magic', 'lead']
+                        }
+                    ],
+                    "school_id": 1,
+                    "id": 1,
+                    "name": "Albertus Magnus"
+                }
+            ]
+        }
+
+        assert serialized == expected
+
     def test_deserialization(self):
         gs = GoldenSchema(WizardCollege, nested_map=self.nested_map)
 

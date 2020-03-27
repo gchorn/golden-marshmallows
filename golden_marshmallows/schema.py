@@ -2,10 +2,13 @@ import re
 
 from marshmallow import (
     fields, post_load, Schema)
+from sqlalchemy.ext.declarative.api import DeclarativeMeta
 from sqlalchemy.dialects.postgresql import (
     ARRAY as pgARRAY, BIGINT, ENUM, TIMESTAMP, UUID)
 from sqlalchemy.sql.sqltypes import (
     ARRAY, Boolean, BOOLEAN, DATE, Integer, INTEGER, JSON, String, TEXT)
+
+
 
 
 def camelcase(string):
@@ -170,16 +173,28 @@ class GoldenSchema(CaseChangingSchema):
 
         Each new `Nested` field is created with a GoldenSchema
         instance which will in turn create recursively nested fields.
+
+        Alternatively, GoldenSchema instances can be created ahead of time
+        and directly passed in, since this gives more flexibility to
+        override nested GoldenSchema fields.
         """
         for key, val in nested_map.items():
-            fieldtype = fields.Nested(
-                GoldenSchema(
+            if isinstance(val['class'], DeclarativeMeta):
+                schema = GoldenSchema(
                     val['class'],
                     nested_map=val.get('nested_map') or {},
                     snake_to_camel=self.snake_to_camel,
                     camel_to_snake=self.camel_to_snake,
                     many=val['many'],
-                    new_obj=self.new_obj),
+                    new_obj=self.new_obj)
+            elif isinstance(val['class'], GoldenSchema):
+                schema = val['class']
+            else:
+                raise TypeError(
+                    'Only SQLAlchemy or GoldenSchema classes are supported'
+                )
+            fieldtype = fields.Nested(
+                schema,
                 many=val['many']
             )
             new_fields[key] = fieldtype
