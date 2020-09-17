@@ -7,15 +7,15 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='golden_marshmallows',
-    version='0.3.0',
+    version='1.0.0',
     author='Guillaume Chorn',
     author_email='guillaume.chorn@gmail.com',
     packages=['golden_marshmallows'],
     url='https://github.com/gchorn/golden-marshmallows',
-    download_url='https://github.com/gchorn/golden-marshmallows/archive/v0.2.1.tar.gz',
+    download_url='https://github.com/gchorn/golden-marshmallows/archive/v1.0.0.tar.gz',
     description='Marshmallow Schema subclass that auto-defines fields based on'
                 ' SQLAlchemy classes',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=['marshmallow<3', 'SQLAlchemy']
+    install_requires=['marshmallow', 'SQLAlchemy']
 )

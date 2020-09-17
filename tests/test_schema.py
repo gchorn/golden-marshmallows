@@ -39,7 +39,7 @@ class TestCaseChangingSchema:
             'attrOne': 'field1',
             'attrTwo': 2
         }
-        result = tschema.dump(tobj).data
+        result = tschema.dump(tobj)
 
         assert result == expected
 
@@ -51,7 +51,7 @@ class TestCaseChangingSchema:
             'attr_one': 'field1',
             'attr_two': 2
         }
-        result = tschema.dump(tobj).data
+        result = tschema.dump(tobj)
 
         assert result == expected
 
@@ -90,7 +90,7 @@ class TestGoldenSchema:
     def test_serialization(self):
         gs = GoldenSchema(WizardCollege, nested_map=self.nested_map)
 
-        serialized = gs.dump(self.school).data
+        serialized = gs.dump(self.school)
 
         expected = {
             "id": 1,
@@ -120,7 +120,7 @@ class TestGoldenSchema:
 
         gs = GoldenSchema(WizardCollege, nested_map=self.nested_map)
 
-        serialized = gs.dump(self.school).data
+        serialized = gs.dump(self.school)
 
         expected = {
             "id": 1,
@@ -154,7 +154,7 @@ class TestGoldenSchema:
 
         self.school.alchemists[0].formulae[0].ingredients = ['magic', 'lead']
 
-        serialized = gs.dump(self.school).data
+        serialized = gs.dump(self.school)
 
         expected = {
             "id": 1,
@@ -200,7 +200,7 @@ class TestGoldenSchema:
             ]
         }
 
-        college = gs.load(serialized).data
+        college = gs.load(serialized)
 
         assert isinstance(college, WizardCollege)
         assert college.id == 1
@@ -239,7 +239,7 @@ class TestGoldenSchema:
             'name': 'Albertus Magnus'
         }
 
-        deserialized = gs.load(serialized).data
+        deserialized = gs.load(serialized)
 
         assert isinstance(deserialized, Alchemist)
         assert deserialized.id is None
@@ -255,7 +255,7 @@ class TestGoldenSchema:
             nested_map=self.nested_map['alchemists']['nested_map'],
             snake_to_camel=True)
 
-        serialized = gs.dump(self.alchemist).data
+        serialized = gs.dump(self.alchemist)
 
         expected = {
             'formulae': [
@@ -279,7 +279,7 @@ class TestGoldenSchema:
         camel_formula = CamelFormula(
             id=1, title='transmutation', camelAttribute='value')
 
-        serialized = gs.dump(camel_formula).data
+        serialized = gs.dump(camel_formula)
 
         expected = {
             'camel_attribute': 'value',
@@ -299,7 +299,7 @@ class TestGoldenSchema:
             nested_map=self.nested_map['alchemists']['nested_map'],
             snake_to_camel=True)
 
-        serialized = gs.dump(self.alchemist).data
+        serialized = gs.dump(self.alchemist)
 
         expected = {
             'formulae': [
@@ -328,7 +328,7 @@ class TestGoldenSchema:
         camel_formula = CamelFormula(
             id=1, title='transmutation', camelAttribute='value')
 
-        serialized = gs.dump(camel_formula).data
+        serialized = gs.dump(camel_formula)
 
         expected = {
             'camel_attribute': 'value',
