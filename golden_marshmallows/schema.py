@@ -1,14 +1,12 @@
 import re
 
 from marshmallow import (
-    fields, post_load, Schema)
+    fields, post_load, Schema, EXCLUDE)
 from sqlalchemy.ext.declarative.api import DeclarativeMeta
 from sqlalchemy.dialects.postgresql import (
     ARRAY as pgARRAY, BIGINT, ENUM, TIMESTAMP, UUID)
 from sqlalchemy.sql.sqltypes import (
     ARRAY, Boolean, BOOLEAN, DATE, Integer, INTEGER, JSON, String, TEXT)
-
-
 
 
 def camelcase(string):
@@ -90,24 +88,20 @@ class CaseChangingSchema(Schema):
         self.snake_to_camel = snake_to_camel
         self.camel_to_snake = camel_to_snake
 
-        # This will cause the Schema to actually raise errors by default
-        kwargs.update({'strict': True})
         super(CaseChangingSchema, self).__init__(*args, **kwargs)
 
         self.alter_case()
 
     def alter_case(self):
-        """ Convert all fields to load_from and dump_to the camelCase or
-        snake_case version of each field name.
+        """ Perform appropriate case conversion of the `data_key` attribute on
+        each field.
         """
         for name, field in self.declared_fields.items():
 
             if self.snake_to_camel:
-                field.load_from = camelcase(name)
-                field.dump_to = camelcase(name)
+                field.data_key = camelcase(name)
             elif self.camel_to_snake:
-                field.load_from = snakecase(name)
-                field.dump_to = snakecase(name)
+                field.data_key = snakecase(name)
 
 
 class GoldenSchema(CaseChangingSchema):
@@ -136,8 +130,8 @@ class GoldenSchema(CaseChangingSchema):
         UUID: fields.UUID
     }
 
-    def __init__(self, sqlalchemy_cls, nested_map={}, new_obj=False,
-                 *args, **kwargs):
+    def __init__(self, sqlalchemy_cls, nested_map=None, new_obj=False,
+                 unknown=EXCLUDE, *args, **kwargs):
         """ Introspects and creates fields for each attribute of the
         given SQLAlchemy class.
 
@@ -152,6 +146,10 @@ class GoldenSchema(CaseChangingSchema):
                 deserialize to new objects; basically just skips adding
                 any field named 'id'
         """
+        nested_map = nested_map if nested_map is not None else {}
+
+        kwargs['unknown'] = unknown
+
         super(GoldenSchema, self).__init__(*args, **kwargs)
 
         self.new_obj = new_obj
@@ -186,6 +184,7 @@ class GoldenSchema(CaseChangingSchema):
                     snake_to_camel=self.snake_to_camel,
                     camel_to_snake=self.camel_to_snake,
                     many=val['many'],
+                    unknown=self.unknown,
                     new_obj=self.new_obj)
             elif isinstance(val['class'], GoldenSchema):
                 schema = val['class']
@@ -250,9 +249,6 @@ class GoldenSchema(CaseChangingSchema):
             # allows subclasses of this class to still define custom
             # fields)
             if name not in self.declared_fields:
-                if self.new_obj and name == 'id':
-                    continue
-
                 field.attribute = name
                 if self.snake_to_camel:
                     name = camelcase(name)
@@ -262,7 +258,13 @@ class GoldenSchema(CaseChangingSchema):
                 self.fields[name] = field
                 self.declared_fields[name] = field
 
+                if self.new_obj and name == 'id':
+                    self.exclude.add('id')
+                else:
+                    self.dump_fields[name] = field
+                    self.load_fields[name] = field
+
     @post_load
-    def make_sqlalchemy_object(self, data):
+    def make_sqlalchemy_object(self, data, **kwargs):
         """ Convert deserialized data into a new SQLAlchemy object. """
         return self.sqlalchemy_cls(**data)

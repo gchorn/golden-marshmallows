@@ -1,6 +1,9 @@
 # golden-marshmallows
 A better integration between SQLAlchemy and Marshmallow. A little (SQL)alchemy to turn `marshmallow`s into gold.
 
+Note: The default unknown field handling has been defaulted to `EXCLUDE` so it handles
+closer to Marshmallow v2.
+
 # Installation
 Simply install with `pip`:
 ```
@@ -50,7 +53,7 @@ session.flush()
 
 schema = GoldenSchema(Alchemist)
 
-serialized = schema.dump(alchemist).data
+serialized = schema.dump(alchemist)
 
 print(json.dump(serialized, indent=4))
 # {
@@ -77,7 +80,7 @@ session.commit()
 
 schema = GoldenSchema(Alchemist, nested_map=nested_map)
 
-serialized = schema.dump(alchemist).data
+serialized = schema.dump(alchemist)
 
 print(json.dump(serialized, indent=4))
 # {
@@ -113,7 +116,7 @@ session.flush()
 
 schema = GoldenSchema(WizardCollege, nested_map=nested_map)
 
-serialized = schema.dump(college).data
+serialized = schema.dump(college)
 
 print(json.dump(serialized, indent=4))
 # {
@@ -160,7 +163,7 @@ formula.ingredients = ['lead', 'magic']
 
 schema = GoldenSchema(Alchemist, nested_map=nested_map)
 
-serialized = schema.dump(alchemist).data
+serialized = schema.dump(alchemist)
 
 print(json.dump(serialized, indent=4))
 # {
@@ -201,7 +204,7 @@ data = {
     ]
 }
 
-college = schema.load(data).data
+college = schema.load(data)
 print(college)
 # <WizardCollege(name='Bogwarts')>
 print(college.alchemists)
@@ -216,7 +219,7 @@ The `snake_to_camel` flag allows serde to/from camelCase, for example when seria
 # `Formula.author_id` is easily converted to camelCase
 schema = GoldenSchema(Formula, snake_to_camel=True)
 
-serialized = schema.dump(formula).data
+serialized = schema.dump(formula)
 
 print(json.dumps(serialized, indent=4))
 # Notice `author_id` has become `authorId`
@@ -233,7 +236,7 @@ data = {
     "authorId": 1,
     "id": 1
 }
-formula = schema.load(data).data
+formula = schema.load(data)
 
 print(formula.author_id)
 # 1
@@ -247,7 +250,7 @@ class MySchema(GoldenSchema):
 
 my_schema = MySchema(Formula, snake_to_camel=True)
 
-serialized = schema.dump(formula).data
+serialized = schema.dump(formula)
 print(json.dumps(serialized, indent=4))
 # `manually_declared` has become camelCase
 # {
@@ -273,7 +276,7 @@ class SnakeObj:
 schema = SnakeSchema(snake_to_camel=True)
 obj = SnakeObj('field1', 2)
 
-serialized = schema.dump(obj).data
+serialized = schema.dump(obj)
 print(json.dumps(serialized, indent=4))
 # {
 #     'attrOne': 'field1',
@@ -292,7 +295,7 @@ data = {
     "id": 1
 }
 
-new_formula = schema.load(data).data
+new_formula = schema.load(data)
 print(new_formula.title)
 # 'transmutation'
 print(new_formula.id)  # None
