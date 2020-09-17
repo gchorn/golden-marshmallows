@@ -1,6 +1,9 @@
 # golden-marshmallows
 A better integration between SQLAlchemy and Marshmallow. A little (SQL)alchemy to turn `marshmallow`s into gold.
 
+Note: The default unknown field handling has been defaulted to `EXCLUDE` so it handles
+closer to Marshmallow v2.
+
 # Installation
 Simply install with `pip`:
 ```

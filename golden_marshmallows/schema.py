@@ -93,8 +93,8 @@ class CaseChangingSchema(Schema):
         self.alter_case()
 
     def alter_case(self):
-        """ Convert all fields to data_key the camelCase or snake_case version
-        of each field name.
+        """ Perform appropriate case conversion of the `data_key` attribute on
+        each field.
         """
         for name, field in self.declared_fields.items():
 
@@ -184,7 +184,7 @@ class GoldenSchema(CaseChangingSchema):
                     snake_to_camel=self.snake_to_camel,
                     camel_to_snake=self.camel_to_snake,
                     many=val['many'],
-                    unknown=EXCLUDE,
+                    unknown=self.unknown,
                     new_obj=self.new_obj)
             elif isinstance(val['class'], GoldenSchema):
                 schema = val['class']
